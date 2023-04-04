@@ -2,11 +2,14 @@ package com.example.videogameview
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var videoGames: RecyclerView
@@ -40,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
         detailsButton.setOnClickListener {
             showGameDetails(game)
         }
-        /*searchBar = findViewById(R.id.search_query_edittext)
+        searchBar = findViewById(R.id.search_query_edittext)
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val query = s.toString().lowercase(Locale.getDefault())
@@ -68,7 +71,7 @@ class HomeActivity : AppCompatActivity() {
                 count: Int
             ) {
             }
-        })*/
+        })
     }
 
     private fun showGameDetails(game: Game) {

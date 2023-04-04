@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class GameDetailsActivity : AppCompatActivity() {
     private lateinit var game: Game
@@ -82,6 +83,6 @@ class GameDetailsActivity : AppCompatActivity() {
         publisher.text = game.publisher
         genre.text = game.genre
         description.text = game.description
-        //Glide.with(this).load(game.coverImage).placeholder(R.drawable.noimagefound).dontAnimate().into(coverImage)
+        Glide.with(this).load(game.coverImage).placeholder(R.drawable.noimagefound).dontAnimate().into(coverImage)
     }
 }

@@ -59,7 +59,7 @@ class TestLayout {
                     allOf(
                         hasDescendant(withId(R.id.game_title_textview)),
                         hasDescendant(withId(R.id.game_rating_textview)),
-                        hasDescendant(withId(R.id.release_date_textview)),
+                        hasDescendant(withId(R.id.game_release_date_textview)),
                         hasDescendant(withId(R.id.game_platform_textview)),
                         hasDescendant(withId(R.id.game_rating_textview))
                     )
