@@ -25,15 +25,19 @@ class ReviewListAdapter(
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         holder.reviewUser.text = reviews[position].username
         holder.reviewTimestamp.text = reviews[position].timestamp.toString()
+        val userImpression = reviews[position]
         if (reviews[position] is UserRating) {
-            holder.reviewRating.setRating(reviews[position].rating!!.toFloat())
-            //holder.reviewRating.isEnabled = false
+            val rating = userImpression as UserRating
+            //holder.reviewRating.setRating(reviews[position].rating!!.toFloat())
+            holder.reviewRating.rating = rating.rating.toFloat()
             holder.reviewRating.setIsIndicator(true)
             holder.reviewText.isVisible = false
         }
         if (reviews[position] is UserReview) {
+            val review = userImpression as UserReview
             holder.reviewRating.isVisible = false
-            holder.reviewText.text = reviews[position].review
+            //holder.reviewText.text = reviews[position].review
+            holder.reviewText.text = review.review
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.videogameview
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -8,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 
 class GameDetailsActivity : AppCompatActivity() {
     private lateinit var game: Game
@@ -83,6 +83,12 @@ class GameDetailsActivity : AppCompatActivity() {
         publisher.text = game.publisher
         genre.text = game.genre
         description.text = game.description
-        Glide.with(this).load(game.coverImage).placeholder(R.drawable.noimagefound).dontAnimate().into(coverImage)
+        //Glide.with(this).load(game.coverImage).placeholder(R.drawable.noimagefound).dontAnimate().into(coverImage)
+        val context: Context = coverImage.context
+        var id: Int = context.resources
+            .getIdentifier(game.coverImage, "drawable", context.packageName)
+        if (id===0) id=context.resources
+            .getIdentifier("noimagefound", "drawable", context.packageName)
+        coverImage.setImageResource(id)
     }
 }

@@ -9,22 +9,22 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "18.11.2011",
                     10.0,
-                    "https://fs-prod-cdn.nintendo-europe.com/media/images/10_share_images/games_15/nintendo_switch_4/H2x1_NSwitch_Minecraft_image1600w.jpg",
+                    "minecraft",
                     "10+",
                     "Mojang Studios",
                     "Mojang Studios",
                     "Sandbox",
                     "Minecraft is a video game in which players create and break apart various kinds of blocks in three-dimensional worlds. The game's two main modes are Survival and Creative. In Survival, players must find their own building supplies and food. They also interact with blocklike mobs, or moving creatures.",
                     mutableListOf<UserImpression>(
-                        UserRating("khalilovic", System.currentTimeMillis(), 5.5),
-                        UserReview("edzeko", System.currentTimeMillis(), "Great game!"),
+                        UserRating("Oliver", System.currentTimeMillis(), 5.5),
+                        UserReview("James", System.currentTimeMillis(), "Great game!"),
                         UserReview(
-                            "ahodzic",
+                            "Benjamin",
                             System.currentTimeMillis(),
                             "More than a block game."
                         ),
-                        UserRating("jsmith", System.currentTimeMillis(), 10.0),
-                        UserRating("aarnautovic", System.currentTimeMillis(), 9.5)
+                        UserRating("Noah", System.currentTimeMillis(), 10.0),
+                        UserRating("Emma", System.currentTimeMillis(), 9.5)
                     )
                 ),
                 Game(
@@ -32,7 +32,7 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "25.07.2017",
                     9.0,
-                    "https://d.newsweek.com/en/full/1968454/fortnite-chapter-3-season-1-keyart.jpg",
+                    "fortnite",
                     "13+",
                     "Epic Games",
                     "Epic Games",
@@ -40,9 +40,21 @@ class GameData {
                     "Fortnite is a survival game where 100 players fight against each other in player versus player combat to be the last one standing.",
                     mutableListOf<UserImpression>(
                         UserRating(
-                            "Proba",
+                            "John",
                             System.currentTimeMillis(),
-                            5.5
+                            7.5
+                        ),
+                        UserReview("Bill", System.currentTimeMillis(), "Great battle royal game!"),
+                        UserRating(
+                            "Donald",
+                            System.currentTimeMillis(),
+                            9.5
+                        ),
+                        UserReview("Sophia", System.currentTimeMillis(), "Best game ever"),
+                        UserRating(
+                            "Henry",
+                            System.currentTimeMillis(),
+                            8.0
                         )
                     )
                 ),
@@ -51,7 +63,7 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "17.09.2013",
                     8.0,
-                    "https://i.ytimg.com/vi/foUaOCzfIRU/maxresdefault.jpg",
+                    "gta5",
                     "18+",
                     "Rockstar North",
                     "Rockstar Games",
@@ -64,7 +76,7 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "24.05.2016",
                     7.5,
-                    "https://cdn.ndtv.com/tech/gadgets/overwatch_versus_.jpg",
+                    "overwatch",
                     "13+",
                     "Blizzard Entertainment",
                     "Blizzard Entertainment",
@@ -77,7 +89,7 @@ class GameData {
                     "Nintendo",
                     "16.07.2021",
                     8.7,
-                    "https://www.zelda.com/breath-of-the-wild/assets/icons/BOTW-Share_icon.jpg",
+                    "legendofzelda",
                     "13+",
                     "Nintendo EPD",
                     "Nintendo",
@@ -90,7 +102,7 @@ class GameData {
                     "PC/Xbox/Mobile",
                     "1.09.2006",
                     8.0,
-                    "https://www.pockettactics.com/wp-content/sites/pockettactics/2020/10/roblox-logo-e1646306978838.jpg",
+                    "roblox",
                     "10+",
                     "Roblox Corporation",
                     "Roblox Corporation",
@@ -103,7 +115,7 @@ class GameData {
                     "PC",
                     "27.10.2009",
                     7.0,
-                    "https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/blt670d428d1921eed8/614be30d69b7947c1b3aebd5/9242021_StateofGameplayArticle_Header.jpg",
+                    "leagueoflegends",
                     "13+",
                     "Riot Games",
                     "Riot Games",
@@ -116,7 +128,7 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "07.07.2015",
                     7.6,
-                    "https://rocketleague.media.zestyio.com/rl_cross-play_asset_no-text.jpg",
+                    "rocketleague",
                     "3+",
                     "Psyonix",
                     "Psyonix",
@@ -129,7 +141,7 @@ class GameData {
                     "PC/Xbox/Playstation",
                     "30.09.2022",
                     7.0,
-                    "https://www.soccerbible.com/media/140938/fifa-10-min.jpg",
+                    "fifa23",
                     "3+",
                     "EA Sports",
                     "EA Sports",
@@ -142,7 +154,7 @@ class GameData {
                     "Playstation",
                     "04.03.2022",
                     9.0,
-                    "https://outsidergaming.com/wp-content/uploads/2022/03/Gran-Turismo-7-How-to-Take-Photos.jpg",
+                    "granturismo",
                     "3+",
                     "Polyphony Digital",
                     "Sony Interactive Entertainment",
