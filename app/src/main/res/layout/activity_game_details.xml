@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Game Title"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/home_button" />
@@ -68,56 +68,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Platform: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/release_date_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Release date: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/esrb_rating_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ESRB rating: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/developer_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Developer: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/publisher_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Publisher: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/genre_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Genre: "
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/description_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Game description"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:textSize="16sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/reviews_recycler_view"

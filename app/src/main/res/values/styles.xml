@@ -5,4 +5,7 @@
         <item name="android:minHeight">22dip</item>
         <item name="android:maxHeight">22dip</item>
     </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

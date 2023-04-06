@@ -27,9 +27,10 @@ class HomeActivity : AppCompatActivity() {
         val extras = intent.extras
         if (extras != null) {
             accessed = extras.getBoolean("DetailsButton")
-            game = extras.getString("GameName")?.let { GameData.getDetails(it) }!!
+            game = GameData.getDetails(extras.getString("GameName"))!!
         } else {
             accessed = false
+            //finish()
         }
         videoGames = findViewById(R.id.game_list)
         videoGames.layoutManager = LinearLayoutManager(
