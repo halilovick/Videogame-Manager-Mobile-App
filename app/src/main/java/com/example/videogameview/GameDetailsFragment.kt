@@ -3,14 +3,17 @@ package com.example.videogameview
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class GameDetailsActivity : AppCompatActivity() {
+class GameDetailsFragment : Fragment() {
     private lateinit var game: Game
     private lateinit var title: TextView
     private lateinit var platform: TextView
@@ -26,40 +29,42 @@ class GameDetailsActivity : AppCompatActivity() {
     private lateinit var reviewAdapter: ReviewListAdapter
     private lateinit var detailsButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game_details)
-        title = findViewById(R.id.game_title_textview)
-        platform = findViewById(R.id.platform_textview)
-        releaseDate = findViewById(R.id.release_date_textview)
-        esrbRating = findViewById(R.id.esrb_rating_textview)
-        developer = findViewById(R.id.developer_textview)
-        publisher = findViewById(R.id.publisher_textview)
-        genre = findViewById(R.id.genre_textview)
-        description = findViewById(R.id.description_textview)
-        coverImage = findViewById(R.id.cover_imageview)
-        detailsButton = findViewById(R.id.details_button)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_game_details, container, false)
+        title = view.findViewById(R.id.game_title_textview)
+        platform = view.findViewById(R.id.platform_textview)
+        releaseDate = view.findViewById(R.id.release_date_textview)
+        esrbRating = view.findViewById(R.id.esrb_rating_textview)
+        developer = view.findViewById(R.id.developer_textview)
+        publisher = view.findViewById(R.id.publisher_textview)
+        genre = view.findViewById(R.id.genre_textview)
+        description = view.findViewById(R.id.description_textview)
+        coverImage = view.findViewById(R.id.cover_imageview)
+        detailsButton = view.findViewById(R.id.details_button)
         detailsButton.isEnabled = false
-        val extras = intent.extras
-        if (extras != null) {
-            game = GameData.getDetails(extras.getString("game_title", ""))!!
-            populateDetails()
-        }
-        homeButton = findViewById(R.id.home_button)
+        game = GameData.getDetails(requireArguments().getString("game_title", ""))!!
+        populateDetails()
+        homeButton = view.findViewById(R.id.home_button)
         homeButton.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java).apply {
+            val intent = Intent(activity, HomeActivity::class.java).apply {
                 putExtra("DetailsButton", true)
                 putExtra("GameName", game.title)
             }
             startActivity(intent)
         }
-        reviewView = findViewById(R.id.reviews_recycler_view)
-        reviewView.layoutManager = LinearLayoutManager(
-            this, LinearLayoutManager.VERTICAL, false
-        )
+        reviewView = view.findViewById(R.id.reviews_recycler_view)
+        reviewView.layoutManager = GridLayoutManager(activity, 1)
         reviewAdapter = ReviewListAdapter(game.userImpressions)
         reviewView.adapter = reviewAdapter
         reviewAdapter.updateReviews(game.userImpressions)
+        return view
+    }
+
+    companion object {
+        fun newInstance(): GameDetailsFragment = GameDetailsFragment()
     }
 
     private fun getGameByTitle(title: String): Game {
