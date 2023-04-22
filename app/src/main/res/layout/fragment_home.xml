@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:textColor="?android:textColorPrimary">
+    android:textColor="?android:textColorPrimary"
+    android:id="@+id/home_fragment_container">
 
     <ImageView
         android:id="@+id/logo_image"
@@ -14,46 +15,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logo" />
 
-    <Button
-        android:id="@+id/home_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Home"
-        app:layout_constraintEnd_toStartOf="@+id/details_button"
-        app:layout_constraintStart_toEndOf="@+id/logo_image"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/details_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Details"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/home_button"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <EditText
         android:id="@+id/search_query_edittext"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="42dp"
         android:hint="Search"
-        app:layout_constraintBottom_toTopOf="@+id/game_list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/search_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_button" />
+        app:layout_constraintStart_toEndOf="@+id/logo_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/search_button"/>
 
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="42dp"
         android:text="Search"
         app:layout_constraintBottom_toTopOf="@+id/game_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/search_query_edittext"
-        app:layout_constraintTop_toBottomOf="@+id/home_button" />
+        app:layout_constraintStart_toEndOf="@+id/search_query_edittext" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/game_list"

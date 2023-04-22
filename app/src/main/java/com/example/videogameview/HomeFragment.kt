@@ -1,17 +1,18 @@
 package com.example.videogameview
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -19,35 +20,56 @@ class HomeFragment : Fragment() {
     private lateinit var videoGames: RecyclerView
     private lateinit var videoGamesAdapter: VideogameListAdapter
     private var videoGamesList = GameData.getAll()
-    private lateinit var detailsButton: Button
     private var accessed = false
     private lateinit var game: Game
 
     private lateinit var searchBar: EditText
+    private lateinit var bottomNavView: BottomNavigationView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view = inflater.inflate(R.layout.fragment_home, container, false)
-        val extras = activity?.intent?.extras
-        if (extras != null) {
-            accessed = extras.getBoolean("DetailsButton")
-            game = GameData.getDetails(extras.getString("GameName"))!!
-        } else {
-            accessed = false
-            //finish()
+        val orientation = resources.configuration.orientation
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            try {
+                val args = HomeFragmentArgs.fromBundle(requireArguments())
+                accessed = true
+                game = GameData.getDetails(args.gameTitle)!!
+            } catch (e: java.lang.IllegalArgumentException) {
+            } catch (e: java.lang.IllegalStateException) {
+            } catch (e: java.lang.NullPointerException) {
+            }
         }
+
         videoGames = view.findViewById(R.id.game_list)
         videoGames.layoutManager = GridLayoutManager(activity, 1)
         videoGamesAdapter = VideogameListAdapter(arrayListOf()) { game -> showGameDetails(game) }
         videoGames.adapter = videoGamesAdapter
         videoGamesAdapter.updateGames(videoGamesList)
-        detailsButton = view.findViewById(R.id.details_button)
-        detailsButton.isEnabled = accessed
-        detailsButton.setOnClickListener {
-            showGameDetails(game)
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            try {
+                bottomNavView = requireActivity().findViewById(R.id.bottomNavigation)
+                bottomNavView.menu.findItem(R.id.gameDetailsItem).isEnabled = accessed
+                val detailsNavButton = bottomNavView.findViewById<View>(R.id.gameDetailsItem)
+                if(::game.isInitialized) {
+                    detailsNavButton.setOnClickListener {
+                        findNavController().navigate(
+                            GameDetailsFragmentDirections.actionHomeToGameDetails(
+                                game.title
+                            )
+                        )
+                    }
+                } else{
+                    detailsNavButton.isEnabled = false
+                }
+            } catch (e: java.lang.NullPointerException) {
+            }
         }
+
         searchBar = view.findViewById(R.id.search_query_edittext)
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -85,14 +107,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun showGameDetails(game: Game) {
-        val fragment = GameDetailsFragment()
-        val args = Bundle()
-        args.putString("game_title", game.title)
-        fragment.arguments = args
-        findNavController().navigate(R.id.gameDetailsItem)
-        parentFragmentManager.beginTransaction()
-            .replace(((view as ViewGroup).parent as View).id, fragment)
-            .addToBackStack(null)
-            .commit()
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            findNavController().navigate(HomeFragmentDirections.actionHomeToGameDetails(game.title))
+        } else {
+            val fragment = GameDetailsFragment()
+            val args = Bundle()
+            args.putString("gameTitle", game.title)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.details_fragment_container, fragment).addToBackStack(null).commit()
+        }
     }
 }
