@@ -55,6 +55,7 @@ class HomeFragment : Fragment() {
                 bottomNavView = requireActivity().findViewById(R.id.bottomNavigation)
                 bottomNavView.menu.findItem(R.id.gameDetailsItem).isEnabled = accessed
                 val detailsNavButton = bottomNavView.findViewById<View>(R.id.gameDetailsItem)
+                val homeNavButton = bottomNavView.findViewById<View>(R.id.homeItem)
                 if(::game.isInitialized) {
                     detailsNavButton.setOnClickListener {
                         findNavController().navigate(
@@ -65,6 +66,7 @@ class HomeFragment : Fragment() {
                     }
                 } else{
                     detailsNavButton.isEnabled = false
+                    homeNavButton.isEnabled = false
                 }
             } catch (e: java.lang.NullPointerException) {
             }

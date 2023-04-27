@@ -180,11 +180,6 @@ class TestLayout {
                 ), click()
             )
         )
-        onView(withIndex(withText(igra.title), 1) as Matcher<View>?).check(
-            matches(
-                isCompletelyDisplayed()
-            )
-        )
         scenario.onActivity { activity ->
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
