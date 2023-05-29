@@ -68,6 +68,7 @@ class GameDetailsFragment() : Fragment() {
                 bottomNavView = requireActivity().findViewById(R.id.bottomNavigation)
                 val homeNavButton = bottomNavView.findViewById<View>(R.id.homeItem)
                 homeNavButton.setOnClickListener {
+
                     if(!::game.isInitialized){
                         //game = GameData.getAll()[0]
                         game = getGameByTitle(title.toString())

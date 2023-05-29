@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 import android.content.res.Configuration
 import android.os.Bundle
