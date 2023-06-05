@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +23,7 @@ class VideogameListAdapter(
         holder.gameTitle.text = videogames[position].title;
         holder.gameRating.text = videogames[position].rating.toString()
         holder.gamePlatform.text = videogames[position].platform
-        holder.gameReleaseDate.text = videogames[position].releaseDate
+        holder.gameReleaseDate.text = videogames[position].releaseDate.toString()
         holder.itemView.setOnClickListener { onItemClicked(videogames[position]) }
     }
 

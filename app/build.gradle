@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.videogameview'
+    namespace 'ba.etf.rma23.projekat'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.videogameview"
+        applicationId "ba.etf.rma23.projekat"
         minSdk 29
         targetSdk 33
         versionCode 1
@@ -19,6 +19,10 @@ android {
     }
 
     buildTypes {
+        debug{
+            buildConfigField 'String', "ClientID", "\"p8l0l85wtm6jp46lm8gaq4gnp88uoq\""
+            buildConfigField 'String', "Auth", "\"Bearer 6j8qzymgj8ftlxie0j8i6ki3ruwqc8\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -69,4 +73,8 @@ dependencies {
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
+
+    implementation 'com.squareup.retrofit2:retrofit:+'
+    implementation 'com.squareup.retrofit2:converter-gson:+'
 }

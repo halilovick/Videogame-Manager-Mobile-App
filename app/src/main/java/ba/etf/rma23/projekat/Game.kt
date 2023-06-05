@@ -1,6 +1,7 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 data class Game(
+    val id: Int,
     val title: String,
     val platform: String,
     val releaseDate: String,
@@ -11,6 +12,6 @@ data class Game(
     val publisher: String,
     val genre: String,
     val description: String,
-    val userImpressions: List<UserImpression>,
+    val userImpressions: List<UserImpression>
 )
 

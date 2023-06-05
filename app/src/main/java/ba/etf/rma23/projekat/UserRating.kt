@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 data class UserRating(
     override val username: String,

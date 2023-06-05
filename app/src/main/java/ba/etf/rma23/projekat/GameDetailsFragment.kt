@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,16 +7,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ba.etf.rma23.projekat.data.repositories.AccountGamesRepository
+import ba.etf.rma23.projekat.data.repositories.GamesRepository
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.*
 
 class GameDetailsFragment() : Fragment() {
-    private lateinit var game : Game
+    private lateinit var game: Game
     private lateinit var title: TextView
     private lateinit var platform: TextView
     private lateinit var releaseDate: TextView
@@ -31,6 +36,9 @@ class GameDetailsFragment() : Fragment() {
     private lateinit var userImpressions: List<UserImpression>
     private lateinit var bottomNavView: BottomNavigationView
     private lateinit var reviewsHeader: TextView
+    private lateinit var games: List<Game>
+
+    private lateinit var addButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,16 +58,43 @@ class GameDetailsFragment() : Fragment() {
         coverImage = view.findViewById(R.id.cover_imageview)
         reviewsHeader = view.findViewById(R.id.reviewsHeaderTextView)
 
+        addButton = view.findViewById(R.id.add_to_favorites_button)
+        //games = getGamesByName("")
+
         try {
             val extras = GameDetailsFragmentArgs.fromBundle(requireArguments())
-            game = GameData.getDetails(extras.gameTitle)!!
+            //game = getGamesByName(extras.gameTitle)[0]
+            //print(game.title + "\n")
+            game = getGameByTitle(extras.gameTitle)
             if (::game.isInitialized) {
                 populateDetails(game)
             }
         } catch (e: java.lang.IllegalStateException) {
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                game = GameData.getAll()[0]
+            /*if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                game = games[0]
                 populateDetails(game)
+            }*/
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            games = getSavedGames()
+
+            if (games.contains(game)) {
+                addButton.setText("Remove from favorites")
+            } else {
+                addButton.setText("Add to favorites")
+            }
+
+            addButton.setOnClickListener {
+                if (games.contains(game)) {
+                    addButton.setText("Remove from favorites")
+                    removeGame(game)
+                    addButton.setText("Add to favorites")
+                } else {
+                    addButton.setText("Add to favorites")
+                    saveGame(game)
+                    addButton.setText("Remove from favorites")
+                }
             }
         }
 
@@ -69,8 +104,7 @@ class GameDetailsFragment() : Fragment() {
                 val homeNavButton = bottomNavView.findViewById<View>(R.id.homeItem)
                 homeNavButton.setOnClickListener {
 
-                    if(!::game.isInitialized){
-                        //game = GameData.getAll()[0]
+                    if (!::game.isInitialized) {
                         game = getGameByTitle(title.toString())
                     }
                     val action = HomeFragmentDirections.actionGameDetailsToHome(game.title)
@@ -87,18 +121,17 @@ class GameDetailsFragment() : Fragment() {
             reviewView.adapter = reviewAdapter
             reviewAdapter.updateReviews(userImpressions)
         }
-
         return view
     }
 
     private fun getGameByTitle(title: String): Game {
-        val gameList = GameData.getAll()
+        val gameList = GamesRepository.games
         for (game in gameList) {
             if (game.title == title) {
                 return game
             }
         }
-        return Game("", "", "", 0.0, "", "", "", "", "", "", mutableListOf<UserImpression>())
+        return Game(0, "", "", "", 0.0, "", "", "", "", "", "", mutableListOf<UserImpression>())
     }
 
     @SuppressLint("SetTextI18n")
@@ -114,10 +147,49 @@ class GameDetailsFragment() : Fragment() {
         userImpressions = game.userImpressions
         if (game.userImpressions.isEmpty()) reviewsHeader.text = "No reviews yet!"
         val context: Context = coverImage.context
-        var id: Int = context.resources
+        /*var id: Int = context.resources
             .getIdentifier(game.coverImage, "drawable", context.packageName)
         if (id === 0) id = context.resources
             .getIdentifier("noimagefound", "drawable", context.packageName)
-        coverImage.setImageResource(id)
+        coverImage.setImageResource(id)*/
+        Glide.with(coverImage.context).load("https:/" + game.coverImage).into(coverImage)
+    }
+
+    fun getGamesByName(name: String): List<Game> {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        var games: MutableList<Game> = mutableListOf()
+        scope.launch {
+            val result = GamesRepository.getGamesByName(name)
+            games = result as MutableList<Game>
+        }
+        return games
+    }
+
+    fun saveGame(game: Game) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = AccountGamesRepository.saveGame(game)
+        }
+    }
+
+    fun removeGame(game: Game) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = AccountGamesRepository.removeGame(game)
+        }
+    }
+
+    suspend fun getSavedGames(): List<Game> {
+        val deferredResult = CompletableDeferred<List<Game>>()
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            try {
+                val result = AccountGamesRepository.getSavedGames()
+                deferredResult.complete(result)
+            } catch (e: Exception) {
+                deferredResult.completeExceptionally(e)
+            }
+        }
+        return deferredResult.await()
     }
 }

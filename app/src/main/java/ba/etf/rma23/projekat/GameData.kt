@@ -1,14 +1,14 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 class GameData {
     companion object {
         fun getAll(): List<Game> {
             return listOf(
-                Game(
+                /*Game(
                     "Minecraft",
                     "PC/Xbox/Playstation",
                     "18.11.2011",
-                    10.0,
+                    10.0f,
                     "minecraft",
                     "10+",
                     "Mojang Studios",
@@ -161,7 +161,7 @@ class GameData {
                     "Racing simulation",
                     "Gran Turismo 7 shines a spotlight on the long history of cars and their culture as the player embarks on a journey to collect the most historic examples. The game is designed to allow players to learn about the origins of each model and their place in history naturally as the game progresses.",
                     mutableListOf<UserImpression>()
-                ),
+                )*/
             )
         }
 

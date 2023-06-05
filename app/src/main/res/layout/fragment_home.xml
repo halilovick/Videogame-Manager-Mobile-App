@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:textColor="?android:textColorPrimary"
-    android:id="@+id/home_fragment_container">
+    android:textColor="?android:textColorPrimary">
 
     <ImageView
         android:id="@+id/logo_image"
@@ -20,19 +20,53 @@
         android:layout_width="0dp"
         android:layout_height="42dp"
         android:hint="Search"
+        app:layout_constraintEnd_toStartOf="@+id/search_button"
         app:layout_constraintStart_toEndOf="@+id/logo_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/search_button"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="42dp"
         android:text="Search"
-        app:layout_constraintBottom_toTopOf="@+id/game_list"
+        app:layout_constraintBottom_toTopOf="@+id/sort_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/search_query_edittext" />
+
+    <Button
+        android:id="@+id/sort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:text="Sort"
+        app:layout_constraintBottom_toTopOf="@+id/game_list"
+        app:layout_constraintTop_toBottomOf="@+id/search_query_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/favorites_button"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:text="Favorites"
+        app:layout_constraintEnd_toStartOf="@+id/sort_button"
+        app:layout_constraintBottom_toTopOf="@+id/game_list"
+        app:layout_constraintTop_toBottomOf="@+id/search_query_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/all_button"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:text="All"
+        app:layout_constraintStart_toEndOf="@+id/sort_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintBottom_toTopOf="@+id/game_list"
+        app:layout_constraintTop_toBottomOf="@+id/search_query_edittext"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/game_list"
@@ -42,6 +76,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_query_edittext" />
+        app:layout_constraintTop_toBottomOf="@+id/sort_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

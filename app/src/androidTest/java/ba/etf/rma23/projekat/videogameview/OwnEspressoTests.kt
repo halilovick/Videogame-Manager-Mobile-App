@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat.videogameview
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
@@ -15,7 +15,8 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import ba.etf.rma23.projekat.GameData
-import ba.etf.rma23.projekat.HomeActivity
+import ba.etf.rma23.projekat.MainActivity
+import com.example.videogameview.R
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
@@ -30,7 +31,7 @@ class TestLayout {
     private lateinit var navController: NavController
 
     @get:Rule
-    var activityRule: ActivityTestRule<HomeActivity> = ActivityTestRule(HomeActivity::class.java)
+    var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
     fun withIndex(matcher: Matcher<View?>, index: Int): Any {
         return object : TypeSafeMatcher<View>() {
@@ -67,7 +68,7 @@ class TestLayout {
      */
     @Test
     fun testNavigateToDetailsFragment() {
-        val scenario = ActivityScenario.launch(HomeActivity::class.java)
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
         scenario.onActivity { activity ->
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
@@ -107,7 +108,7 @@ class TestLayout {
      */
     @Test
     fun landscapeTest() {
-        val scenario = ActivityScenario.launch(HomeActivity::class.java)
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
         scenario.onActivity { activity ->
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
@@ -147,7 +148,7 @@ class TestLayout {
      */
     @Test
     fun orientationChangeTest() {
-        val scenario = ActivityScenario.launch(HomeActivity::class.java)
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
         scenario.onActivity { activity ->
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }

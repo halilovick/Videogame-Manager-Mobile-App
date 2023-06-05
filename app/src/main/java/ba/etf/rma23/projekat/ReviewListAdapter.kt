@@ -1,4 +1,4 @@
-package com.example.videogameview
+package ba.etf.rma23.projekat
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,6 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-
 class ReviewListAdapter(
     private var reviews: List<UserImpression>,
 ) : RecyclerView.Adapter<ReviewListAdapter.ReviewViewHolder>() {
@@ -15,7 +14,7 @@ class ReviewListAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ReviewListAdapter.ReviewViewHolder {
+    ): ReviewViewHolder {
         val view = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.item_review, parent, false)
