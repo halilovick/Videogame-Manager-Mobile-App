@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object GamesRepository {
-    var games: MutableList<Game> = mutableListOf()
+    lateinit var games: MutableList<Game>
 
     suspend fun GamesRepository() {
         getGamesByName("")
@@ -16,7 +16,17 @@ object GamesRepository {
             var response = IGDBApiConfig.retrofit.getGamesByName(name)
             var responseBody = response.body()
             games = (responseBody as MutableList<Game>?)!!
+            //print(games)
             return@withContext responseBody ?: emptyList()
+        }
+    }
+
+    suspend fun getGameByName(name: String): Game {
+        return withContext(Dispatchers.IO) {
+            var response = IGDBApiConfig.retrofit.getGamesByName(name)
+            var responseBody = response.body()
+            var game = responseBody?.get(0)
+            return@withContext game!!
         }
     }
 
@@ -33,10 +43,10 @@ object GamesRepository {
     suspend fun sortGames(): List<Game> {
         val saved = AccountGamesRepository.getSavedGames().toMutableList()
         saved.sortBy { it.title }
-        games = getGamesByName("") as MutableList<Game>
-        games.removeAll(saved)
-        games.sortBy { it.title }
-        saved.addAll(games)
+        val sortedGames = games
+        sortedGames.removeAll(saved)
+        sortedGames.sortBy { it.title }
+        saved.addAll(sortedGames)
         return saved
     }
 

@@ -128,6 +128,7 @@ class HomeFragment : Fragment() {
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         scope.launch {
             val result = GamesRepository.getGamesByName(name)
+            GamesRepository.games = result as MutableList<Game>
             videoGamesAdapter.updateGames(result)
             //print(result)
         }

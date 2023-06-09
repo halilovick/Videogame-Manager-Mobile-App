@@ -21,9 +21,10 @@ object AccountGamesRepository {
     suspend fun getSavedGames(): List<Game> {
         return withContext(Dispatchers.IO) {
             var response = AccountApiConfig.retrofit.getSavedGames(userHash!!)
-            val lista: MutableList<Game> = mutableListOf()
+            val lista: MutableList<Game> = emptyList<Game>().toMutableList()
             for (i in 0 until response.size) {
-                lista.add(GamesRepository.getGamesByName(response[i].name)[0])
+                //lista.add(GamesRepository.getGamesByName(response[i].name)[0])
+                lista.add(GamesRepository.getGameByName(response[i].name))
             }
             return@withContext lista
         }
