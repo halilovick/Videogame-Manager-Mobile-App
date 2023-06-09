@@ -1,14 +1,13 @@
 package ba.etf.rma23.projekat.data.repositories
 
-import ba.etf.rma23.projekat.BuildConfig
 import ba.etf.rma23.projekat.Game
 import retrofit2.Response
 import retrofit2.http.*
 
 interface IGDBApi {
     @Headers(
-        "Client-ID: ${BuildConfig.ClientID}",
-        "Authorization: ${BuildConfig.Auth}",
+        "Client-ID: p8l0l85wtm6jp46lm8gaq4gnp88uoq",
+        "Authorization: Bearer 6j8qzymgj8ftlxie0j8i6ki3ruwqc8",
         "Content-Type: application/json"
     )
     @GET("games")
