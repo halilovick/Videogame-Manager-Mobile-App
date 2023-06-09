@@ -1,7 +1,6 @@
 package ba.etf.rma23.projekat
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -59,24 +58,23 @@ class GameDetailsFragment() : Fragment() {
         reviewsHeader = view.findViewById(R.id.reviewsHeaderTextView)
 
         addButton = view.findViewById(R.id.add_to_favorites_button)
-        //games = getGamesByName("")
-
-        try {
-            val extras = GameDetailsFragmentArgs.fromBundle(requireArguments())
-            //game = getGamesByName(extras.gameTitle)[0]
-            //print(game.title + "\n")
-            game = getGameByTitle(extras.gameTitle)
-            if (::game.isInitialized) {
-                populateDetails(game)
-            }
-        } catch (e: java.lang.IllegalStateException) {
-            /*if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                game = games[0]
-                populateDetails(game)
-            }*/
-        }
 
         CoroutineScope(Dispatchers.Main).launch {
+            GamesRepository.GamesRepository()
+
+            try {
+                val extras = GameDetailsFragmentArgs.fromBundle(requireArguments())
+                game = getGameByTitle(extras.gameTitle)
+                if (::game.isInitialized) {
+                    populateDetails(game)
+                }
+            } catch (e: java.lang.IllegalStateException) {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    game = GamesRepository.games[0]
+                    populateDetails(game)
+                }
+            }
+
             games = getSavedGames()
 
             if (games.contains(game)) {
@@ -88,7 +86,7 @@ class GameDetailsFragment() : Fragment() {
             addButton.setOnClickListener {
                 if (games.contains(game)) {
                     addButton.setText("Remove from favorites")
-                    removeGame(game)
+                    removeGame(game.id)
                     addButton.setText("Add to favorites")
                 } else {
                     addButton.setText("Add to favorites")
@@ -126,6 +124,7 @@ class GameDetailsFragment() : Fragment() {
 
     private fun getGameByTitle(title: String): Game {
         val gameList = GamesRepository.games
+        //val gameList = getGamesByName(title)
         for (game in gameList) {
             if (game.title == title) {
                 return game
@@ -146,23 +145,7 @@ class GameDetailsFragment() : Fragment() {
         description.text = game.description
         userImpressions = game.userImpressions
         if (game.userImpressions.isEmpty()) reviewsHeader.text = "No reviews yet!"
-        val context: Context = coverImage.context
-        /*var id: Int = context.resources
-            .getIdentifier(game.coverImage, "drawable", context.packageName)
-        if (id === 0) id = context.resources
-            .getIdentifier("noimagefound", "drawable", context.packageName)
-        coverImage.setImageResource(id)*/
         Glide.with(coverImage.context).load("https:/" + game.coverImage).into(coverImage)
-    }
-
-    fun getGamesByName(name: String): List<Game> {
-        val scope = CoroutineScope(Job() + Dispatchers.Main)
-        var games: MutableList<Game> = mutableListOf()
-        scope.launch {
-            val result = GamesRepository.getGamesByName(name)
-            games = result as MutableList<Game>
-        }
-        return games
     }
 
     fun saveGame(game: Game) {
@@ -172,10 +155,10 @@ class GameDetailsFragment() : Fragment() {
         }
     }
 
-    fun removeGame(game: Game) {
+    fun removeGame(id: Int) {
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         scope.launch {
-            val result = AccountGamesRepository.removeGame(game)
+            val result = AccountGamesRepository.removeGame(id)
         }
     }
 

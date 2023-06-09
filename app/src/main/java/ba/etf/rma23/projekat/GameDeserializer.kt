@@ -21,20 +21,20 @@ class GameDeserializer : JsonDeserializer<Game> {
 
         val id = jsonObject.get("id")?.asInt ?: 0
 
-        val gameName = jsonObject.get("name")?.asString ?: ""
+        val gameName = jsonObject.get("name")?.asString ?: "Information unavailable"
         val genreArray = jsonObject.getAsJsonArray("genres")
         val genre = if (genreArray != null && genreArray.size() > 0) {
             val genreObject = genreArray[0].asJsonObject
-            genreObject.get("name")?.asString ?: ""
+            genreObject.get("name")?.asString ?: "Information unavailable"
         } else {
-            ""
+            "Information unavailable"
         }
         val platformArray = jsonObject.getAsJsonArray("platforms")
         val platform = if (platformArray != null && platformArray.size() > 0) {
             val platformObject = platformArray[0].asJsonObject
-            platformObject.get("name")?.asString ?: ""
+            platformObject.get("name")?.asString ?: "Information unavailable"
         } else {
-            ""
+            "Information unavailable"
         }
         val epochTimeSeconds = jsonObject.getAsJsonPrimitive("first_release_date")?.asLong ?: 0
         val releaseDate = Date(epochTimeSeconds * 1000)
@@ -45,22 +45,22 @@ class GameDeserializer : JsonDeserializer<Game> {
         val ratingUnrounded = jsonObject.get("rating")?.asFloat ?: -1f
         val rating =
             BigDecimal(ratingUnrounded.toString()).setScale(2, RoundingMode.HALF_EVEN).toDouble()
-        val cover = jsonObject.getAsJsonObject("cover")?.get("url")?.asString ?: ""
-        val summary = jsonObject.get("summary")?.asString ?: ""
+        val cover = jsonObject.getAsJsonObject("cover")?.get("url")?.asString ?: "/eagle-sensors.com/wp-content/uploads/unavailable-image.jpg"
+        val summary = jsonObject.get("summary")?.asString ?: "Information unavailable"
 
         val companyArray = jsonObject.getAsJsonArray("involved_companies")
-        var developer = ""
-        var publisher = ""
+        var developer = "Information unavailable"
+        var publisher = "Information unavailable"
         if (companyArray != null && companyArray.size() > 0) {
             for (i in 0 until companyArray.size()) {
                 val companyObject = companyArray[i].asJsonObject
                 if (companyObject.get("developer").asBoolean == true) {
                     developer =
-                        companyObject.getAsJsonObject("company")?.get("name")?.asString ?: ""
+                        companyObject.getAsJsonObject("company")?.get("name")?.asString ?: "Information unavailable"
                 }
                 if (companyObject.get("publisher")?.asBoolean == true) {
                     publisher =
-                        companyObject.getAsJsonObject("company")?.get("name")?.asString ?: ""
+                        companyObject.getAsJsonObject("company")?.get("name")?.asString ?: "Information unavailable"
                 }
             }
         }
@@ -76,7 +76,7 @@ class GameDeserializer : JsonDeserializer<Game> {
         var esrbRatings = mutableListOf("RP", "EC", "E", "E10", "T", "M", "AO")
         var pegiRatings = mutableListOf("Three", "Seven", "Twelve", "Sixteen", "Eighteen")
         var esrbRatingEnum = 0
-        var esrbRating = ""
+        var esrbRating = "Information unavailable"
 
         if (ageRatingCategory == 1) {
             esrbRatingEnum = if (ageRatingArray.size() > 0) {

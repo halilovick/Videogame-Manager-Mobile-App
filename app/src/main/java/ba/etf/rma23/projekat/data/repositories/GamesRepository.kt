@@ -7,6 +7,10 @@ import kotlinx.coroutines.withContext
 object GamesRepository {
     var games: MutableList<Game> = mutableListOf()
 
+    suspend fun GamesRepository() {
+        getGamesByName("")
+    }
+
     suspend fun getGamesByName(name: String): List<Game> {
         return withContext(Dispatchers.IO) {
             var response = IGDBApiConfig.retrofit.getGamesByName(name)

@@ -2,8 +2,6 @@ package ba.etf.rma23.projekat
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -31,6 +28,7 @@ class HomeFragment : Fragment() {
     private lateinit var game: Game
 
     private lateinit var searchBar: EditText
+    private lateinit var searchbutton: Button
     private lateinit var bottomNavView: BottomNavigationView
     private lateinit var sortButton: Button
     private lateinit var favoritesButton: Button
@@ -98,28 +96,11 @@ class HomeFragment : Fragment() {
         }
 
         searchBar = view.findViewById(R.id.search_query_edittext)
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val query = s.toString().lowercase(Locale.getDefault())
-                getGamesByName(query)
-            }
+        searchbutton = view.findViewById(R.id.search_button)
+        searchbutton.setOnClickListener {
+            getGamesByName(searchBar.text.toString())
+        }
 
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-            }
-
-            override fun onTextChanged(
-                s: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-            }
-        })
         return view
     }
 
@@ -130,7 +111,7 @@ class HomeFragment : Fragment() {
     private fun showGameDetails(game: Game) {
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            val t  = game.title
+            val t = game.title
             findNavController().navigate(HomeFragmentDirections.actionHomeToGameDetails(t))
         } else {
             val fragment = GameDetailsFragment()

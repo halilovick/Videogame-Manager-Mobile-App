@@ -5,9 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object AccountGamesRepository {
-    private var userHash: String? = "f84654a6-73a4-45ac-ab4f-84fa58850896"
-    val savedGames: MutableList<Game> = emptyList<Game>().toMutableList()
-    var userAge: Int? = null
+    private var userHash: String = "f84654a6-73a4-45ac-ab4f-84fa58850896"
+    var savedGames: MutableList<Game> = emptyList<Game>().toMutableList()
+    var userAge: Int? = 20
 
     fun setHash(acHash: String): Boolean {
         userHash = acHash
@@ -41,11 +41,11 @@ object AccountGamesRepository {
         }
     }
 
-    suspend fun removeGame(game: Game): Boolean {
+    suspend fun removeGame(id: Int): Boolean {
         return withContext(Dispatchers.IO) {
-            var response = AccountApiConfig.retrofit.removeGame(userHash!!, game.id.toString())
+            var response = AccountApiConfig.retrofit.removeGame(userHash!!, id.toString())
             var responseBody = response.body()
-            savedGames.remove(game)
+            savedGames.filterNot { it.id == id }
             if (responseBody?.response == "Games deleted") return@withContext true
             return@withContext false
         }
