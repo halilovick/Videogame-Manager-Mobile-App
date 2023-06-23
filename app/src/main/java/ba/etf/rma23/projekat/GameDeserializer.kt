@@ -29,6 +29,7 @@ class GameDeserializer : JsonDeserializer<Game> {
         } else {
             "Information unavailable"
         }
+
         val platformArray = jsonObject.getAsJsonArray("platforms")
         val platform = if (platformArray != null && platformArray.size() > 0) {
             val platformObject = platformArray[0].asJsonObject
@@ -36,6 +37,7 @@ class GameDeserializer : JsonDeserializer<Game> {
         } else {
             "Information unavailable"
         }
+
         val epochTimeSeconds = jsonObject.getAsJsonPrimitive("first_release_date")?.asLong ?: 0
         val releaseDate = Date(epochTimeSeconds * 1000)
         val ld = LocalDate.ofEpochDay(epochTimeSeconds / 86400)

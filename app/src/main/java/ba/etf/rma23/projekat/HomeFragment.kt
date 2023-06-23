@@ -1,5 +1,6 @@
 package ba.etf.rma23.projekat
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ba.etf.rma23.projekat.data.repositories.AccountGamesRepository
+import ba.etf.rma23.projekat.data.repositories.GameReview
+import ba.etf.rma23.projekat.data.repositories.GameReviewsRepository
 import ba.etf.rma23.projekat.data.repositories.GamesRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +63,16 @@ class HomeFragment : Fragment() {
         //videoGamesAdapter.updateGames(videoGamesList)
         //AccountGamesRepository.setHash("f84654a6-73a4-45ac-ab4f-84fa58850896")
         getGamesByName("")
+        //getReviewsForGame(176032)
+        //var review = GameReview(1536, "proba", 15360100)
+        context?.let {
+            //sendReview(review, it)
+            //getOfflineReviews(it)
+            //sendOfflineReviews(it)
+        }
+
+
+
         sortButton = view.findViewById(R.id.sort_button)
         sortButton.setOnClickListener {
             sortGames()
@@ -127,10 +140,14 @@ class HomeFragment : Fragment() {
     fun getGamesByName(name: String) {
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         scope.launch {
+            try{
             val result = GamesRepository.getGamesByName(name)
             GamesRepository.games = result as MutableList<Game>
             videoGamesAdapter.updateGames(result)
             //print(result)
+            } catch (exception: Exception){
+                println("GRESKA")
+            }
         }
     }
 
@@ -151,4 +168,43 @@ class HomeFragment : Fragment() {
         }
     }
 
+    fun getReviewsForGame(id: Int) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.getReviewsForGame(id)
+            println(result)
+        }
+    }
+
+    fun getOfflineReviews(context: Context) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.getOfflineReviews(context)
+            println(result)
+        }
+    }
+
+    fun sendReview(review: GameReview, context: Context) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.sendReview(context, review)
+            println(result)
+        }
+    }
+
+    fun sendOfflineReviews(context: Context) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.sendOfflineReviews(context)
+            println(result)
+        }
+    }
+
+    fun getGameById(id: Int) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GamesRepository.getGameById(id)
+            println(result)
+        }
+    }
 }

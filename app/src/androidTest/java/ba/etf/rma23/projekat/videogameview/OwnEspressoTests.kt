@@ -1,192 +1,147 @@
-package ba.etf.rma23.projekat.videogameview
+package ba.etf.rma23.projekat
 
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
-import android.view.View
-import androidx.navigation.NavController
-import androidx.recyclerview.widget.RecyclerView
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.PositionAssertions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
-import ba.etf.rma23.projekat.GameData
-import ba.etf.rma23.projekat.MainActivity
-import com.example.videogameview.R
-import org.hamcrest.CoreMatchers
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
+import androidx.test.platform.app.InstrumentationRegistry
+import ba.etf.rma23.projekat.*
+import ba.etf.rma23.projekat.data.*
+import ba.etf.rma23.projekat.data.repositories.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert
+import org.junit.Assert.*
+import org.junit.BeforeClass
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+import java.net.URL
+
 
 @RunWith(AndroidJUnit4::class)
-class TestLayout {
-    private lateinit var navController: NavController
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+class DBTest {
 
     @get:Rule
-    var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
+    val intentsTestRule = ActivityScenarioRule(MainActivity::class.java)
 
-    fun withIndex(matcher: Matcher<View?>, index: Int): Any {
-        return object : TypeSafeMatcher<View>() {
-            var currentIndex = 0
-            var viewObjHash = 0
 
-            @SuppressLint("DefaultLocale")
-            override fun describeTo(description: Description) {
-                description.appendText(String.format("with index: %d ", index))
-                matcher.describeTo(description)
+    //pri testiranju zamjenite hash sa vaÅ¡im i id igre umjesto 22 postavite na neki drugi broj
+    // da ne bi doÅ¡lo do konfuzije oko rezultata testova ako dva studenta istovremeno testiraju svoj kod
+    private val HASH = "f84654a6-73a4-45ac-ab4f-84fa58850896"
+    private val idIGRE = 55
+
+
+    private val countNotOnline =
+        "SELECT COUNT(*) AS broj_reviews FROM gamereview WHERE online=false"
+
+    private fun executeCountAndCheck(query: String, column: String, value: Long) {
+        var rezultat = db.rawQuery(query, null)
+        rezultat.moveToFirst()
+        var brojOdgovora = rezultat.getLong(0)
+        MatcherAssert.assertThat(brojOdgovora, `is`(equalTo(value)))
+    }
+
+    companion object {
+        private lateinit var context: Context
+        private lateinit var baza: String
+        private lateinit var db: SQLiteDatabase
+
+        suspend fun obrisi() {
+            var client: OkHttpClient = OkHttpClient()
+            var builder: Request.Builder = Request.Builder()
+                .url(URL("https://rma23ws.onrender.com/account/" + AccountGamesRepository.getHash() + "/gamereviews"))
+                .delete()
+            var request: Request = builder.build()
+            withContext(Dispatchers.IO) {
+                var response: Response = client.newCall(request).execute()
             }
+        }
 
-            override fun matchesSafely(view: View): Boolean {
-                if (matcher.matches(view) && currentIndex++ == index) {
-                    viewObjHash = view.hashCode()
-                }
-                return view.hashCode() == viewObjHash
-            }
+        @BeforeClass
+        @JvmStatic
+        fun setup() = runBlocking {
+            val scenario = ActivityScenario.launch(
+                MainActivity::class.java
+            )
+
+            context = ApplicationProvider.getApplicationContext<Context>()
+
+            baza = context.databaseList().minBy { x -> x.length }
+            db = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(baza).absolutePath,
+                null,
+                SQLiteDatabase.OPEN_READONLY
+            )
+            db.rawQuery("DELETE FROM gamereview", null)
+            obrisi()
         }
     }
 
-    /*
-    Testiranje osnovnih funkcionalnosti aplikacije u portrait orijentaciji
 
-    Prilikom pokretanja aplikacije, details dugme u navigation komponenti treba biti onemoguceno.
-    Klik na home dugme ne bi trebao nista promijeniti. Nakon klika na igricu, detalji o istoj trebaju biti prikazani.
-    Klik na home dugme bi nas trebao vratiti na home fragment.
-    Sada details dugme u navigation komponenti treba biti omoguceno, te prilikom klika treba prikazati detalje
-    o zadnje prikazanoj igrici.
-
-    U ovom testu testiramo da li su dugmadi u navigation komponenti omoguceni odnosno onemoguceni u ispravnim trenucima.
-    Takodjer testiramo da li klik na igricu, povratak na home, pa klik na details dugme prikazuje istu igricu.
-    Ovu proceduru ponavljamo za prve tri igrice.
-     */
     @Test
-    fun testNavigateToDetailsFragment() {
-        val scenario = ActivityScenario.launch(MainActivity::class.java)
-        scenario.onActivity { activity ->
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
-        onView(withId(R.id.gameDetailsItem)).check(matches(CoreMatchers.not(isEnabled())))
-        onView(withId(R.id.homeItem)).perform(click())
-        for (i in 0..2) {
-            var igra = GameData.getAll().get(i)
-            onView(withId(R.id.game_list)).perform(
-                RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                    allOf(
-                        hasDescendant(withText(igra.title)),
-                        hasDescendant(withText(igra.releaseDate)),
-                        hasDescendant(withText(igra.rating.toString()))
-                    ), click()
-                )
-            )
-            onView(withText(igra.title)).check(matches(isCompletelyDisplayed()))
-            onView(withId(R.id.homeItem)).perform(click())
-            onView(withId(R.id.gameDetailsItem)).check(matches(isEnabled()))
-            onView(withId(R.id.gameDetailsItem)).perform(click())
-            onView(withText(igra.title)).check(matches(isCompletelyDisplayed()))
-            onView(withId(R.id.homeItem)).perform(click())
-        }
-        scenario.close()
+    fun a0_countOfflineReviews() = runBlocking {
+        AccountGamesRepository.setHash(HASH)
+        var rez = GameReviewsRepository.getOfflineReviews(context)
+        executeCountAndCheck(countNotOnline, "broj_reviews", rez.size.toLong())
     }
 
-    /*
-    Testiranje osnovnih funkcionalnosti aplikacije u landscape orijentaciji
-
-    Aplikacija se pokrece u portrait orijentaciji pa se okrece u landscape.
-    U landscape orijentaciji detalji prve igrice trebaju automatski biti prikazani u details fragmentu.
-    Nakon klika na drugu igricu, detalji o istoj trebaju biti prikazani.
-
-    U ovom testu testiramo da li su detalji prve igrice prikazani prilikom okretanja u landscape mode,
-    te da li se detalji prikazu prilikom klika na druge igrice. Testiran je klik na igrice sa indeksom od 1 do 5,
-    kao i klik na istu igricu dva puta.
-     */
     @Test
-    fun landscapeTest() {
-        val scenario = ActivityScenario.launch(MainActivity::class.java)
-        scenario.onActivity { activity ->
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-        var igra = GameData.getAll().get(0)
-        onView(withId(R.id.details_fragment_container)).check(matches(isDisplayed()))
-        onView(withIndex(withText(igra.title), 1) as Matcher<View>?).check(
-            matches(
-                isCompletelyDisplayed()
-            )
-        )
-        for (i in 0..5) {
-            igra = GameData.getAll().get(i)
-            onView(withId(R.id.game_list)).perform(
-                RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                    allOf(
-                        hasDescendant(withText(igra.title)),
-                        hasDescendant(withText(igra.releaseDate)),
-                        hasDescendant(withText(igra.rating.toString()))
-                    ), click()
-                )
-            )
-            onView(withIndex(withText(igra.title), 1) as Matcher<View>?).check(
-                matches(
-                    isCompletelyDisplayed()
-                )
-            )
-        }
-        scenario.close()
+    fun a1_sendOfflineAndCount() = runBlocking {
+        var rez1 = GameReviewsRepository.getOfflineReviews(context)
+        var rez = GameReviewsRepository.sendOfflineReviews(context)
+        executeCountAndCheck(countNotOnline, "broj_reviews", rez1.size.toLong() - rez)
     }
 
-    /*
-    Testiranje promjene orijentacije tokom koristenja aplikacije
-
-    Aplikacija se pokrece u portrait orijentaciji. Nakon promjene orijentacije u landscape, prva igrica treba
-    biti prikazana u details fragmentu neovisno o igri u portrait orijentaciji. Nakon povratka u portrait
-    orijentaciju, igra koja je bila prikazana prije promjene u landscape treba ponovo biti prikizana.
-     */
     @Test
-    fun orientationChangeTest() {
-        val scenario = ActivityScenario.launch(MainActivity::class.java)
-        scenario.onActivity { activity ->
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
-        var prvaIgra = GameData.getAll().get(5)
-        onView(withId(R.id.game_list)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                allOf(
-                    hasDescendant(withText(prvaIgra.title)),
-                    hasDescendant(withText(prvaIgra.releaseDate)),
-                    hasDescendant(withText(prvaIgra.rating.toString()))
-                ), click()
-            )
-        )
-        onView(withText(prvaIgra.title)).check(matches(isCompletelyDisplayed()))
-        scenario.onActivity { activity ->
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-        var igra = GameData.getAll().get(0)
-        onView(withId(R.id.details_fragment_container)).check(matches(isDisplayed()))
-        onView(withIndex(withText(igra.title), 1) as Matcher<View>?).check(
-            matches(
-                isCompletelyDisplayed()
-            )
-        )
-        igra = GameData.getAll().get(6)
-        onView(withId(R.id.game_list)).perform(
-            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                allOf(
-                    hasDescendant(withText(igra.title)),
-                    hasDescendant(withText(igra.releaseDate)),
-                    hasDescendant(withText(igra.rating.toString()))
-                ), click()
-            )
-        )
-        scenario.onActivity { activity ->
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
-        onView(withText(prvaIgra.title)).check(matches(isCompletelyDisplayed()))
-        scenario.close()
+    fun a2_noOfflineReviews() = runBlocking {
+        executeCountAndCheck(countNotOnline, "broj_reviews", 0)
+    }
+
+    @Test
+    fun a3_sendWhileOffline() = runBlocking {
+        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("svc wifi disable")
+        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("svc data disable")
+        Thread.sleep(2000)
+        var rez =
+            GameReviewsRepository.sendReview(context, GameReview(3, "dobro", idIGRE, false, "", ""))
+        assert(!rez) { "Should return false" }
+        executeCountAndCheck(countNotOnline, "broj_reviews", 1)
+    }
+
+    @Test
+    fun a4_enableInternetAndSendOffline() = runBlocking {
+        var uia = InstrumentationRegistry.getInstrumentation().uiAutomation
+        uia.executeShellCommand("svc wifi enable")
+        uia.executeShellCommand("svc data enable")
+        Thread.sleep(2000)
+        var rez = GameReviewsRepository.sendOfflineReviews(context)
+        assertEquals(rez, 1)
+        executeCountAndCheck(countNotOnline, "broj_reviews", 0)
+
+    }
+
+    @Test
+    fun a5_getOnlineReviewsForGame() = runBlocking {
+        var rez = GameReviewsRepository.getReviewsForGame(idIGRE)
+        assertEquals(rez.size, 1)
+    }
+
+    @Test
+    fun a6_deleteAllAndCheckNumReviewsOnline() = runBlocking {
+        obrisi()
+        var rez = GameReviewsRepository.getReviewsForGame(idIGRE)
+        assertEquals(rez.size, 0)
     }
 }

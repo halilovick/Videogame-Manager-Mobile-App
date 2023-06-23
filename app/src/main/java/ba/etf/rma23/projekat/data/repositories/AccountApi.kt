@@ -19,6 +19,15 @@ interface AccountApi {
     @DELETE("/account/{aid}/game")
     suspend fun deleteAllGamesFromAccount(@Path("aid") aid: String): Boolean
 
-    //@POST("/login")
-    //suspend fun login(@Path("aid") aid: String):
+    @GET("/game/{gid}/gamereviews")
+    suspend fun getReviewsForGame(
+        @Path("gid") gid: String
+    ): Response<List<GameReview>>
+
+    @POST("/account/{aid}/game/{gid}/gamereview")
+    suspend fun sendReview(
+        @Path("aid") aid: String,
+        @Path("gid") gid: String,
+        @Body body: ReviewBody
+    ): Response<GameReview>
 }

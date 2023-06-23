@@ -3,6 +3,7 @@ package ba.etf.rma23.projekat.data.repositories
 import ba.etf.rma23.projekat.Game
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.RequestBody.Companion.toRequestBody
 
 object GamesRepository {
     lateinit var games: MutableList<Game>
@@ -48,6 +49,14 @@ object GamesRepository {
         sortedGames.sortBy { it.title }
         saved.addAll(sortedGames)
         return saved
+    }
+
+    suspend fun getGameById(id: Int): List<Game> = withContext(Dispatchers.IO) {
+        val stringId = id.toString()
+        val string =
+            "fields id, name, genres.name, platforms.name, first_release_date, rating, cover.url, summary, involved_companies.developer, involved_companies.publisher, involved_companies.company.name, age_ratings.category, age_ratings.rating; where id = $stringId;"
+        val response = IGDBApiConfig.retrofit.getGameById(string.toRequestBody())
+        return@withContext response.body()!!
     }
 
     fun esrbToNumber(s: String): Int {

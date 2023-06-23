@@ -1,12 +1,14 @@
 package ba.etf.rma23.projekat
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -14,6 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ba.etf.rma23.projekat.data.repositories.AccountGamesRepository
+import ba.etf.rma23.projekat.data.repositories.GameReview
+import ba.etf.rma23.projekat.data.repositories.GameReviewsRepository
 import ba.etf.rma23.projekat.data.repositories.GamesRepository
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -32,12 +36,15 @@ class GameDetailsFragment() : Fragment() {
     private lateinit var coverImage: ImageView
     private lateinit var reviewView: RecyclerView
     private lateinit var reviewAdapter: ReviewListAdapter
-    private lateinit var userImpressions: List<UserImpression>
+    var userImpressions: MutableList<UserImpression> = mutableListOf()
     private lateinit var bottomNavView: BottomNavigationView
     private lateinit var reviewsHeader: TextView
     private lateinit var games: List<Game>
 
     private lateinit var addButton: Button
+    private lateinit var submitReviewButton: Button
+    private lateinit var review_text: EditText
+    private lateinit var rating_text: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +65,9 @@ class GameDetailsFragment() : Fragment() {
         reviewsHeader = view.findViewById(R.id.reviewsHeaderTextView)
 
         addButton = view.findViewById(R.id.add_to_favorites_button)
+        submitReviewButton = view.findViewById(R.id.submit_review_button)
+        review_text = view.findViewById(R.id.review_edittext)
+        rating_text = view.findViewById(R.id.rating_edittext)
 
         CoroutineScope(Dispatchers.Main).launch {
             GamesRepository.GamesRepository()
@@ -67,11 +77,13 @@ class GameDetailsFragment() : Fragment() {
                 game = getGameByTitle(extras.gameTitle)
                 if (::game.isInitialized) {
                     populateDetails(game)
+                    getReviewsForGame(game.id)
                 }
             } catch (e: java.lang.IllegalStateException) {
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     game = GamesRepository.games[0]
                     populateDetails(game)
+                    getReviewsForGame(game.id)
                 }
             }
 
@@ -114,10 +126,54 @@ class GameDetailsFragment() : Fragment() {
 
         reviewView = view.findViewById(R.id.reviews_recycler_view)
         reviewView.layoutManager = GridLayoutManager(activity, 1)
-        if (::userImpressions.isInitialized) {
-            reviewAdapter = ReviewListAdapter(userImpressions)
-            reviewView.adapter = reviewAdapter
-            reviewAdapter.updateReviews(userImpressions)
+
+
+        submitReviewButton.setOnClickListener {
+            context?.let {
+                try {
+                    val rating = rating_text.text.toString().toInt()
+                    val review = review_text.text.toString()
+                    if (review == "") {
+                        sendReview(
+                            GameReview(
+                                rating,
+                                null,
+                                game.id
+                            ), it
+                        )
+                    } else {
+                        sendReview(
+                            GameReview(
+                                rating,
+                                review_text.text.toString(),
+                                game.id
+                            ), it
+                        )
+                    }
+                } catch (exception: java.lang.NumberFormatException) {
+                    val review = review_text.text.toString()
+                    if (review == "") {
+                        sendReview(
+                            GameReview(
+                                null,
+                                null,
+                                game.id
+                            ), it
+                        )
+                    } else {
+                        sendReview(
+                            GameReview(
+                                null,
+                                review_text.text.toString(),
+                                game.id
+                            ), it
+                        )
+                    }
+                }
+                reviewAdapter = ReviewListAdapter(userImpressions)
+                reviewView.adapter = reviewAdapter
+                reviewAdapter.updateReviews(userImpressions)
+            }
         }
         return view
     }
@@ -143,8 +199,6 @@ class GameDetailsFragment() : Fragment() {
         publisher.text = "Publisher: " + game.publisher
         genre.text = "Genre: " + game.genre
         description.text = game.description
-        userImpressions = game.userImpressions
-        if (game.userImpressions.isEmpty()) reviewsHeader.text = "No reviews yet!"
         Glide.with(coverImage.context).load("https:/" + game.coverImage).into(coverImage)
     }
 
@@ -174,5 +228,44 @@ class GameDetailsFragment() : Fragment() {
             }
         }
         return deferredResult.await()
+    }
+
+    fun sendReview(review: GameReview, context: Context) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.sendReview(context, review)
+            println(result)
+        }
+    }
+
+    fun getReviewsForGame(id: Int) {
+        val scope = CoroutineScope(Job() + Dispatchers.Main)
+        scope.launch {
+            val result = GameReviewsRepository.getReviewsForGame(id)
+
+            for (gameReview in result) {
+
+                if (gameReview.review != null && gameReview.review != "") {
+                    userImpressions.add(
+                        UserReview(
+                            gameReview.student!!,
+                            gameReview.timestamp!!,
+                            gameReview.review!!
+                        )
+                    )
+                } else if (gameReview.rating != null) {
+                    userImpressions.add(
+                        UserRating(
+                            gameReview.student!!,
+                            gameReview.timestamp!!,
+                            gameReview.rating!!.toDouble()
+                        )
+                    )
+                }
+            }
+            reviewAdapter = ReviewListAdapter(userImpressions)
+            reviewView.adapter = reviewAdapter
+            reviewAdapter.updateReviews(userImpressions)
+        }
     }
 }
