@@ -14,4 +14,7 @@ interface GameReviewDAO {
 
     @Insert
     suspend fun insertAll(vararg review: GameReview)
+
+    @Insert
+    suspend fun insert(gameReview: GameReview)
 }

@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val scope = CoroutineScope(Job() + Dispatchers.Main)
         scope.launch {
             var db = AppDatabase.getInstance(applicationContext)
-            db.gameDao().insertAll(GameReview(2, "a", 125, false, "", "", 1512233))
+            db.gameDao().insert(GameReview(2, "a", 125, false, "", "", 1562233))
         }
     }
 }

@@ -16,6 +16,7 @@ object GameReviewsRepository {
 
     suspend fun sendReview(context: Context, review: GameReview): Boolean {
         return withContext(Dispatchers.IO) {
+            var reviews = AppDatabase.getInstance(context).gameDao().getAll()
             try {
                 println(review.review)
                 var savedGames = AccountGamesRepository.getSavedGames()
@@ -28,7 +29,9 @@ object GameReviewsRepository {
                                 ReviewBody(review.review, review.rating)
                             )
                         review.online = true
-                        AppDatabase.getInstance(context).gameDao().insertAll(review)
+                        if (review in reviews == false) {
+                            AppDatabase.getInstance(context).gameDao().insert(review)
+                        }
                         return@withContext true
                     }
                 }
@@ -39,10 +42,46 @@ object GameReviewsRepository {
                     ReviewBody(review.review, review.rating)
                 )
                 review.online = true
-                AppDatabase.getInstance(context).gameDao().insertAll(review)
+                if (review in reviews == false) {
+                    AppDatabase.getInstance(context).gameDao().insert(review)
+                }
                 return@withContext true
             } catch (exception: Exception) {
-                AppDatabase.getInstance(context).gameDao().insertAll(review)
+                //review.online = false
+                if (review in reviews == false) {
+                    AppDatabase.getInstance(context).gameDao().insert(review)
+                }
+                return@withContext false
+            }
+        }
+    }
+
+    suspend fun sendReviewWithoutAddingToDB(context: Context, review: GameReview): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                var savedGames = AccountGamesRepository.getSavedGames()
+                for (game in savedGames) {
+                    if (game.id == review.igdb_id) {
+                        var response =
+                            AccountApiConfig.retrofit.sendReview(
+                                AccountGamesRepository.getHash()!!,
+                                review.igdb_id.toString(),
+                                ReviewBody(review.review, review.rating)
+                            )
+                        review.online = true
+                        return@withContext true
+                    }
+                }
+                AccountGamesRepository.saveGame(GamesRepository.getGameById(review.igdb_id).get(0))
+                AccountApiConfig.retrofit.sendReview(
+                    AccountGamesRepository.getHash()!!,
+                    review.igdb_id.toString(),
+                    ReviewBody(review.review, review.rating)
+                )
+                review.online = true
+                return@withContext true
+            } catch (exception: Exception) {
+                review.online = false
                 return@withContext false
             }
         }
@@ -52,9 +91,11 @@ object GameReviewsRepository {
         var lista = getOfflineReviews(context)
         var brojac = 0
         for (review in lista) {
-            if (sendReview(context, review)) {
-                brojac += 1
-                AppDatabase.getInstance(context).gameDao().updateOnlineStatus(review.id!!)
+            if (!review.online) {
+                if (sendReviewWithoutAddingToDB(context, review)) {
+                    AppDatabase.getInstance(context).gameDao().updateOnlineStatus(review.id!!)
+                    brojac += 1
+                }
             }
         }
         return brojac
