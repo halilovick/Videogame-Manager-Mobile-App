@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
-        //sendReview()
+        //sendReview()      // ubacuje random review u bazu kako bi se ista kreirala.
         val orientation = resources.configuration.orientation
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
